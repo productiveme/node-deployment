@@ -43,7 +43,7 @@ Other salient locations include:
 - The Upstart job config: `/etc/init/proxy-node-app.conf`
 - Monit's config: `/etc/monit/monitrc`
 
-### 1. Server setup with Apache/Wordpress
+### 0. Server setup with Apache/Wordpress
 Launched a new Ubuntu Server 12.04.1 LTS 64-bit instance using the AWS Console.
 
 Installed updates and upgrades
