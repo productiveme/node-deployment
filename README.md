@@ -1,21 +1,15 @@
-## Node Reverse Proxy Deployment Via Gitolite, Upstart and Monit
+## EC2 server setup for Node / Meteor / Wordpress Network
 
-This repo represents an attempt to detail an approach for automated deployment and hosting of Node applications on a remote server. I'll try to add step-by-step instructions to this readme file and where relevant commit some example scripts and config files too.
+This repo contains the scripts and cofig files to configure an Amazon EC2 Ubuntu server for hosting a wordpress network, and some node or meteor apps.
 
-In order to kill two birds with one stone the example Node app we'll be deploying will be a reverse proxy listening on port 80, which will be useful in future when we want to run further services on the server on ports other than 80 but still reach them on clean URIs (e.g. `www.myapp.com` as opposed to `www.myserver.com:8000` etc.)
+An example Node app is included to be deployed as a reverse proxy listening on port 80, which will be useful to direct traffic between the node / meteor apps and the wordpress network sites on clean URIs (e.g. `www.myapp.com` as opposed to `www.myserver.com:8000` etc.)
 
 ### Deployment overview
 
-- Node application code is source controlled under Git.
-- The remote server is running [Gitolite](https://github.com/sitaramc/gitolite) to enable collaborative development and deployment with multi-user access control to a remote Git repo.
-- When new code is pushed to Gitolite a `post-receive` hook is used to execute a shell script which moves the Node application files to their proper location on the server and restarts the app.
 - [Upstart](http://upstart.ubuntu.com) and [Monit](http://mmonit.com/monit) are used to manage the Node application on the server, both for restarting on deployment and reboot and for displaying and reporting on status.
-- Gitolite and Node apps will run under the `git` and `node` system users. The deployment script will be invoked as `root`.
-
-### Hardware used
-
-- Server: Linode VPS running Ubuntu 10.04 Lucid
-- Workstation: OSX Mountain Lion 10.8.1
+- Node apps will run under the `node` system user. The deployment script will be invoked as `root`.
+- Apache and Wordpress Multisite (or Network) will be installed to listen on port 8000
+- Node / Meteor apps will listen from port 8001 onwards
 
 ### Software used
 
