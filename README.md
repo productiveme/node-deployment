@@ -157,9 +157,12 @@ Replace the RewriteRule for `^wp-admin$`
 
 [2.1]: http://wordpress.org/extend/plugins/wordpress-mu-domain-mapping/
 
+**TODO:** Modify notes below the line to be relevant to this adaptation
+- - -
+
 ### 3. The Node Application
 
-I've added the Node reverse proxy application code to this repo [here](https://github.com/jedrichards/node-deployment/tree/master/node-app) so you can look around the files. It uses nodejitsu's own [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) under the hood, which apparently is a robust proxy that sees a good deal of testing and production usage.
+I've added the Node reverse proxy application code to this repo [here](https://github.com/productiveme/node-deployment/tree/master/node-proxy) so you can look around the files. It uses nodejitsu's own [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) under the hood, which apparently is a robust proxy that sees a good deal of testing and production usage.
 
 The app reads a JSON file specifying a set of proxy rules and starts listening on port 80. For a example, an incoming request to `www.my-node-app.com` could be internally rerouted to a Node app running at `127.0.0.1:8022`, a request to `www.my-domain.com` could be proxied to an Apache vhost at `127.0.0.1:8000`, and a request to `www.my-domain.com/api` could be routed to a Node app sitting at `127.0.0.1:8023`, and so on. Since this is Node, web sockets and arbitrary TCP/IP traffic will be proxied (hopefully) flawlessly. I think node-http-proxy also supports proxying of HTTPS over SSL/TLS too although I don't have that set up in the example app. As I understand it at the time of writing (Sept 2012) nginx and Apache via `mod_proxy` still do not happily support web socket proxying out of the box.
 
