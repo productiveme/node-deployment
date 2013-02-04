@@ -82,7 +82,7 @@ Changed the sendmail_path to
 #!bash
 sendmail_path = "/usr/sbin/sendmail -t -i"
 ```
-** TODO: add configuration to setup AWS SES Email here **
+**TODO:** Add configuration to setup AWS SES Email here 
 
 Installed Wordpress
 ```
@@ -130,7 +130,7 @@ $ sudo service apache2 restart
 
 Rename and update your wp-config.php as normal from wp-config-sample.php.
 
-**TODO: Add special notes on how to setup MySQL RDS and connection strings**
+**TODO:** Add special notes on how to setup MySQL RDS and connection strings
 
 First enable the option to install Network by adding the following line to the wp-config.php file just before "That's all, stop editing!" comment.
 ```
@@ -146,9 +146,9 @@ Manually install the [Wordpress MU Domain Mapping][2.1] plugin.
 
 Copy the `sunrise.php` file from the plugin's folder to the `wp-content` folder.
 
-**TODO: Explain changing Apache default port to 8000 and changes to .htaccess**
+**TODO:** Explain changing Apache default port to 8000 and changes to .htaccess
 
-**TODO: Rewrite the notes below the line to apply to this configuration**
+**TODO:** Rewrite the notes below the line to apply to this configuration
 
 ---------------------------------------------------------------------------
 
