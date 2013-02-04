@@ -13,7 +13,7 @@ echo "Deploying $APP_NAME ..."
 export GIT_DIR=/home/git/repositories/"$APP_NAME".git
 
 APP_DIR=/var/node/"$APP_NAME"
-export GIT_WORK_TREE="$APP_DIR"/app
+export GIT_WORK_TREE="$APP_DIR"
 
 echo "Using Git repo $GIT_DIR"
 echo "Using Node app folder $GIT_WORK_TREE"
@@ -26,7 +26,7 @@ if [ ! -d "$GIT_DIR" ]; then
         exit 1
 fi
 
-# Node apps will live in /var/node/app-name/app so create
+# Node apps will live in /var/node/app-name so create
 # if it doesn't exist.
 
 if [ ! -d "$GIT_WORK_TREE" ]; then
