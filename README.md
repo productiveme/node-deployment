@@ -196,7 +196,7 @@ Navigate to the hooks folder for the relevant repo and start to edit the `post-r
 	chmod u+x post-receive    # If required, may already be executable
 	nano post-receive
 
-Make the contents look like (or similar to) the example `post-receive` hook in this repo [here](https://github.com/jedrichards/node-deployment/blob/master/post-receive).
+Make the contents look like (or similar to) the example `post-receive` hook in this repo [here](https://github.com/productiveme/node-deployment/blob/master/post-receive).
 
 In the hook we're attempting to invoke the `/var/node/node-deploy` generic deployment script via a `sudo`'ed `sh` command while passing down a configuration environment variable called `APP_NAME` (we'll go on to make that script in the next section). Since this `post-receive` hook will not be executing in an interactive shell it will bork at the `git` user's attempt to `sudo`, so the next thing we need to do is give the `git` user the right to invoke `/var/node/node-deploy` with the `sh` command without a password.
 
@@ -216,7 +216,7 @@ We're not quite done with `/etc/sudoers` though, we need to stop `sudo` strippin
 
 Again, this shouldn't be too much of a security concern because we'll be handling the contents of `APP_NAME` carefully in `node-deploy`.
 
-You can see my version of sudoers [here](https://github.com/jedrichards/node-deployment/blob/master/sudoers). It just has the default contents and the changes mentioned above.
+You can see my version of sudoers [here](https://github.com/productiveme/node-deployment/blob/master/sudoers). It just has the default contents and the changes mentioned above.
 
 Save and exit `/etc/sudoers`. We now should be in a postion where we can push to our Gitolite repo and have the `post-receive` execute, and having granted the `git` user the right to invoke the deployment script as `root` without asking for a password we shoud have the power to do any kind of filesystem manipulation we like. Now we need to write that script.
 
@@ -227,7 +227,7 @@ I'm calling this a "generic" deployment script because I'm aiming for it to be u
 	cd /var/node
 	sudo touch node-deploy
 
-An example of this script is in this repo [here](https://github.com/jedrichards/node-deployment/blob/master/node-deploy).
+An example of this script is in this repo [here](https://github.com/productiveme/node-deployment/blob/master/node-deploy).
 
 The script above is fairly well commented so I won't go into much detail but basically it's simply syncronising the contents of the node app directory (in this case `/var/node/proxy-node-app/app`) with the latest revision of the files in the bare Gitolite repo via `git checkout -f`. Once that's been done it's changing the ownership of the files to the `node` user and restarting the app via Monit.
 
@@ -243,7 +243,7 @@ In the context of a Node app we can use Upstart to daemonize the app into a syst
 
 Upstart is already on your box if you're running Ubuntu 10.04 like me, but if you don't have it I think it's installable via `apt-get`.
 
-An example Upstart job configuration is in this repo [here](https://github.com/jedrichards/node-deployment/blob/master/proxy-node-app.conf).
+An example Upstart job configuration is in this repo [here](https://github.com/productiveme/node-deployment/blob/master/node-proxy.conf).
 
 Once you have your job config file in place run the following command to have Upstart list out all its valid jobs. If yours is *not* in the list it means you have some sort of basic syntax error:
 
@@ -259,7 +259,7 @@ As mentioned above Upstart will automatically respawn services that bomb unexpec
 
 So just to re-iterate: Upstart restarts the app on system reboot/crash and provides the start/stop command line API while Monit keeps tabs on its status while it's running and restarts it if it looks unhealthy. Monit is pretty powerful, and it can monitor all sorts of process metrics (uptime, cpu usage, memory usage etc.) but for our purposes we're just keeping it simple for now.
 
-I installed Monit via `apt-get` on Ubuntu 10.04. Everything went more or less smoothly, and most of the information you need is in the docs. Monit is configured via the `/etc/monit/monitrc` file, and [here's](https://github.com/jedrichards/node-deployment/blob/master/monitrc) my example. The file is commented but broadly speaking my `monitrc` is doing the following things:
+I installed Monit via `apt-get` on Ubuntu 10.04. Everything went more or less smoothly, and most of the information you need is in the docs. Monit is configured via the `/etc/monit/monitrc` file, and [here's](https://github.com/productiveme/node-deployment/blob/master/monitrc) my example. The file is commented but broadly speaking my `monitrc` is doing the following things:
 
 - Checking on the health of the `proxy-node-app` via its special `/ping` route.
 - Exposes Monit's web-based front end on a specific port and controls access via a username and password.
