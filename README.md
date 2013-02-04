@@ -26,13 +26,13 @@ An example Node app is included to be deployed as a reverse proxy listening on p
 
 All Node stuff into `/var/node`, aping how Apache sites often all go into `/var/www`) and plumped for the following locations:
 
-- Proxy Node app: `/var/node/http-proxy`
-- Proxy Node app's log file: `/var/node/http-proxy/log`
-- Proxy Node app's pidfile: `/var/node/http-proxy/pid`
+- Proxy Node app: `/var/node/node-proxy`
+- Proxy Node app's log file: `/var/node/node-proxy/log`
+- Proxy Node app's pidfile: `/var/node/node-proxy/pid`
 
 Other salient locations include:
 
-- The Upstart job config: `/etc/init/http-proxy.conf`
+- The Upstart job config: `/etc/init/node-proxy.conf`
 - Monit's config: `/etc/monit/monitrc`
 
 ### 1. Installing Apache/Wordpress
@@ -130,7 +130,7 @@ $ sudo service apache2 restart
 
 Rename and update your wp-config.php as normal from wp-config-sample.php.
 
-**TODO:** Add special notes on how to setup MySQL RDS and connection strings
+**TODO:** Add extra notes on how to setup MySQL RDS and connection strings
 
 First enable the option to install Network by adding the following line to the wp-config.php file just before "That's all, stop editing!" comment.
 ```
@@ -146,11 +146,33 @@ Manually install the [Wordpress MU Domain Mapping][2.1] plugin.
 
 Copy the `sunrise.php` file from the plugin's folder to the `wp-content` folder.
 
-**TODO:** Explain changing Apache default port to 8000 and changes to .htaccess
-
-**TODO:** Rewrite the notes below the line to apply to this configuration
-
-- - -
+We'll want our apache to listen on port 8000 so the reverse proxy can listen on port 80 and direct traffic correctly.
+```
+#!bash
+sudo nano /etc/apache2/ports.conf
+```
+Change the ports to 8000
+```
+NameVirtualHost *:8000
+Listen 8000
+```
+Change the default site's port
+```
+#!bash
+sudo nano /etc/apache2/sites-enabled/000-default
+```
+<VirtualHost *:8000>
+```
+Fix the broken RewriteRule in the .htaccess when on a different port than 80
+```
+#!bash
+sudo nano /var/www/.htaccess
+```
+Replace the RewriteRule for `^wp-admin$`
+```
+# add a trailing slash to /wp-admin
+RewriteRule ^wp-admin$ http://%{SERVER_NAME}/wp-admin/ [R=302,L]
+```
 
 [2.1]: http://wordpress.org/extend/plugins/wordpress-mu-domain-mapping/
 
@@ -227,7 +249,7 @@ The script above is fairly well commented so I won't go into much detail but bas
 
 You don't have to keep your node apps in `/var/node`, anywhere will likely do, but after some research it seemed like a reasonably sensible location.
 
-### 5. Upstart
+### 6. Upstart
 
 [Upstart](http://upstart.ubuntu.com) is an event driven daemon which handles the automatic starting of services at boot, as well as optionally respawning them if their associated process dies unexpectedly. Additionally it exposes a handy command line API for manipulating the services with commands like `sudo start servicename`, `sudo stop servicename`, `sudo restart servicename` and `sudo status servicename` etc.
 
@@ -245,7 +267,7 @@ Once you have your job config file in place run the following command to have Up
 
 If all is well Upstart will now start and stop your Node app on shutdown and reboot, respawn it if it crashes, and allow you to manually control it via commands like `sudo start proxy-node-app`. If your `start` command fails to spin up the app as expected it means that some or all of the Upstart scripts are failing. One gotcha is that environment variables defined in an Upstart `env` stanza do not expand when concatenated.
 
-### 6. Monit
+### 7. Monit
 
 [Monit](http://mmonit.com/monit) is a utility for managing and monitoring all sorts of UNIX system resources (processes, web services, files, directories  etc). We'll be using it to monitor the health of our proxy Node app, and indeed any other apps we decide to host on this box.
 
@@ -278,27 +300,7 @@ Once Monit is properly up and running it exposes a similar command line API to U
 	sudo monit start proxy-node-app
 	sudo monit stop proxy-node-app
 
-### Future thoughts, improvements?
-
-#### More complex setup
-
-For more complex apps that have more involved steps for initialisation (database setup etc.) we would need to move beyond a generic deployment script. Checking such a build script into version control along with the app code would probably be a good idea, as would making use of tools like [Jake](https://github.com/mde/jake).
-
-#### Rolling back failed deployments
-
-By keeping a record of previous versions of the app (perhaps in directories with names like `proxy-node-app-v0.5`) and symlinking the most recently deployed version to the live app folder it'd make it much easier to rollback a broken version of the app.
-
-#### More environments
-
-At the moment there is a simple 1:1 relationship between the developer's workstation environment and the production server. It would probably be quite easy to set up different branches in the remote Git repo, for example to represent `production` and `staging` environments, and handle pushes to those branches differently in the `post-receive` hook.
-
-#### Continuous integration
-
-This deployment process has no concept of continuous integration or testing. While it probably wouldn't be hard to add some light-weight CI-like features I'm aware that it might be reinventing the wheel. Is this where [Jenkins](https://wiki.jenkins-ci.org/display/JENKINS/Home) comes in?
-
-#### Server configuration
-
-Although I tried to keep this as simple as possible I'm aware that it involves a fair number of steps and fairly fiddly server configuration. It'd probably take at least half day to a day to get this process up and running from a cold start. Is this where tools such as [Chef](http://www.opscode.com/chef) and [Puppet](http://puppetlabs.com) could help?
+**TODO:** Change monitrc config file to email via AWS SES
 
 ### References
 

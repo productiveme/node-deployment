@@ -37,15 +37,15 @@ Find out more at http://0.0.0.0:0000
 Love, $HOST X
 }
 
-# Check proxy-node-app. The pidfile and start/stop functionality is supplied
+# Check node-proxy. The pidfile and start/stop functionality is supplied
 # by Upstart. If the proxy fails to respond with a 200 OK HTTP response code
 # after a request to its special "/ping" route then Monit will
 # alert and attempt to restart.
 
-check process proxy-node-app
-    with pidfile /var/node/proxy-node-app/pid
-    start program = "/sbin/start proxy-node-app"
-    stop program = "/sbin/stop proxy-node-app"
+check process node-proxy
+    with pidfile /var/node/node-proxy/pid
+    start program = "/sbin/start node-proxy"
+    stop program = "/sbin/stop node-proxy"
     if failed
         host 127.0.0.1
         port 80
