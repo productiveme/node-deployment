@@ -116,7 +116,7 @@ Rename and update your wp-config.php as normal from wp-config-sample.php.
 
 **TODO:** Add extra notes on how to setup MySQL RDS and connection strings
 
-First enable the option to install Network by adding the following line to the wp-config.php file just before "That's all, stop editing!" comment.
+First enable the option to install Network by adding the following line to the `wp-config.php` file just before "That's all, stop editing!" comment.
 
 	/* Multisite */
 	define('WP_ALLOW_MULTISITE', true);

@@ -1,0 +1,6 @@
+{
+    "mymeteorapp.mydomain.com" : "127.0.0.1:8001",
+    "mydomain.com/mybetanodeapp" : "127.0.0.1:8002",
+    "myproductionnodeapp.com" : "127.0.0.1:8003",
+    ".*" : "127.0.0.1:8000"
+}
