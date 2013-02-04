@@ -1,6 +1,6 @@
 ## EC2 server setup for Node / Meteor / Wordpress Network
 
-This repo contains the scripts and cofig files to configure an Amazon EC2 Ubuntu server for hosting a wordpress network, and some node or meteor apps.
+This repo contains the scripts and config files to configure an Amazon EC2 Ubuntu server for hosting a wordpress network, and some additional node or meteor apps.
 
 An example Node app is included to be deployed as a reverse proxy listening on port 80, which will be useful to direct traffic between the node / meteor apps and the wordpress network sites on clean URIs (e.g. `www.myapp.com` as opposed to `www.myserver.com:8000` etc.)
 
@@ -14,30 +14,24 @@ An example Node app is included to be deployed as a reverse proxy listening on p
 ### Software used
 
 - Node 0.8.9 (server)
-- Node 0.8.6 (workstation)
 - Git 1.7.0.4 (server)
-- Git 1.7.9.6 (Apple Git-31.1) (workstation)
 - Monit 5.0.3 (server)
-- Gitolite 3.04-15-gaec8c71 (server)
 - Upstart 0.6.5-8 (server)
 
 ### Remote directory structures and file locations
 
-I wasn't too sure about where to put the deployment script, live Node apps and related files. They could go in obscure traditional UNIX locations like `/usr/local/sbin` and `/var/opt/log` but in the end I decided to group all Node stuff into `/var/node`, aping how Apache sites often all go into `/var/www`) and plumped for the following locations:
+All Node stuff into `/var/node`, aping how Apache sites often all go into `/var/www`) and plumped for the following locations:
 
-- Generic Node app deployment script: `/var/node/node-deploy`
-- Live Node app: `/var/node/proxy-node-app/app`
-- Live Node app's log file: `/var/node/proxy-node-app/log`
-- Live Node app's pidfile: `/var/node/proxy-node-app/pid`
+- Proxy Node app: `/var/node/http-proxy`
+- Proxy Node app's log file: `/var/node/http-proxy/log`
+- Proxy Node app's pidfile: `/var/node/http-proxy/pid`
 
 Other salient locations include:
 
-- Gitolite repo: `/home/git/repositories/proxy-node-app.git`
-- The Git post-receive hook: `/home/git/repositories/proxy-node-app.git/hooks/post-receive`
-- The Upstart job config: `/etc/init/proxy-node-app.conf`
+- The Upstart job config: `/etc/init/http-proxy.conf`
 - Monit's config: `/etc/monit/monitrc`
 
-### 0. Server setup with Apache/Wordpress
+### 1. Installing Apache/Wordpress
 Launched a new Ubuntu Server 12.04.1 LTS 64-bit instance using the AWS Console.
 
 Installed updates and upgrades
@@ -63,7 +57,7 @@ $ sudo apt-get install mysql-client-5.5
 Installed PHP and some recommended modules
 ```
 #!bash
-$ sudo apt-get install php5 libapache2-mod-php5 php5-suhosin php5-curl php-pear php5-mysql php5-gd
+$ sudo apt-get install php5 libapache2-mod-php5 php5-suhosin php5-curl php-pear php5-mysql
 ```
 Installed postfix to enable sending email
 ```
@@ -84,6 +78,8 @@ Changed the sendmail_path to
 #!bash
 sendmail_path = "/usr/sbin/sendmail -t -i"
 ```
+** TODO: add configuration to setup AWS SES Email here **
+
 Installed Wordpress
 ```
 #!bash
@@ -126,30 +122,31 @@ Bounced Apache
 $ sudo service apache2 restart
 ```
 
-### 1. Setup Gitolite
+### 2. Setup Wordpress Multisite / Network
 
-Setting up [Gitolite](https://github.com/sitaramc/gitolite) on the server is optional, but it makes it much easier to grant granular read/write access to your remote repo to coworkers. If you're pretty sure you're the only person who'll ever be working with the app then you could probably get away with setting up a bare Git repo yourself and working with it directly over SSH. You could possibly use GitHub too, but that's out of the question if you're hosting sensitive/private code and you don't want to pay for private repos.
+Rename and update your wp-config.php as normal from wp-config-sample.php.
 
-Setting up Gitolite is beyond the scope of this document, but there's fairly good documentation [here](http://sitaramc.github.com/gitolite/master-toc.html). Suffice to say I encountered a fair few hiccups while getting Gitolite to work, mainly revolving around SSH configuration, so I'm going to briefly talk about some of those sticking points and their remedies.
+** TODO: Add special notes on how to setup MySQL RDS and connection strings **
 
-During installation Gitolite mandates the creation of a `git` (or `gitolite`) user on your server with limited privileges, and when you push code to Gitolite you do so over SSH and authenticate via public key. Gitolite works out whether you have access rights to the repo you're trying to push to by checking the public key you offer to the server, so needless to say it's important that SSH is presenting the correct one. I found the following command useful to verbosely debug a SSH connection that is mysteriously failing:
-	
-	ssh -vT git@gitolite-host
+First enable the option to install Network by adding the following line to the wp-config.php file just before "That's all, stop editing!" comment.
+```
+#!php
+/* Multisite */
+define('WP_ALLOW_MULTISITE', true);
+```
+Install Network from the Tools menu, selecting the `Sub-domains` option.
 
-It can also be useful to nail down which SSH credentials your system may be trying to use for a given user/key/host combination, in which case you could add an entry to your `~/.ssh/config` file something like this:
+Note and apply the changes to the `wp-config.php` and `.htaccess` files.
 
-	Host gitolite-host
-		HostName 0.0.0.0
-		IdentityFile ~/.ssh/id_rsa
-		User git
-		IdentitiesOnly yes
+Manually install the [Wordpress MU Domain Mapping][2.1]] plugin.
 
-This example would define a `gitolite-host` server alias pointing to your deployment server at IP `0.0.0.0` which would always connect as the remote user `git` using the `~/.ssh/id_rsa` key. The `IdentitiesOnly yes` enforces the use of the specified key. OSX will sometimes cache a public key, especially when you've opted to save a key's password to the system keychain and/or `ssh-agent`. So if you're really having trouble SSHing into Gitolite with right user/key/host combo you can purge that cache like so:
+Copy the `sunrise.php` file from the plugin's folder to the `wp-content` folder.
 
-	sudo ssh-add -L     # Lists all public keys currently being cached
-	sudo ssh-add -D     # Deletes all cached public keys
+** TODO: Explain changing Apache default port to 8000 and changes to .htaccess **
 
-### 2. The Node Application
+[2.1]: http://wordpress.org/extend/plugins/wordpress-mu-domain-mapping/
+
+### 3. The Node Application
 
 I've added the Node reverse proxy application code to this repo [here](https://github.com/jedrichards/node-deployment/tree/master/node-app) so you can look around the files. It uses nodejitsu's own [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) under the hood, which apparently is a robust proxy that sees a good deal of testing and production usage.
 
@@ -169,7 +166,7 @@ At this stage it might be handy to create the non-privileged `node` system user:
 
 	sudo adduser --system --shell /bin/bash --gecos "Node apps" --group --disabled-password --home /home/node node
 
-### 3. The post-recieve hook
+### 4. The post-recieve hook
 
 At this stage I'll assume you have some application code added to a fully working remote Gitolite repo on the server and are able to `push` and `pull` to it with ease from your workstation.
 
@@ -209,7 +206,7 @@ You can see my version of sudoers [here](https://github.com/jedrichards/node-dep
 
 Save and exit `/etc/sudoers`. We now should be in a postion where we can push to our Gitolite repo and have the `post-receive` execute, and having granted the `git` user the right to invoke the deployment script as `root` without asking for a password we shoud have the power to do any kind of filesystem manipulation we like. Now we need to write that script.
 
-### 4. The generic deployment script
+### 5. The generic deployment script
 
 I'm calling this a "generic" deployment script because I'm aiming for it to be useful for publishing any reasonably non-complex Node app. To this end we use the `APP_NAME` value passed in from the `post-receive` hook to tailor the behaviour of the script. It doesn't have to be executable since we're invoking it via the `sh` command. Go and ahead and create it:
 
