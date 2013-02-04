@@ -298,4 +298,5 @@ Once Monit is properly up and running it exposes a similar command line API to U
 - http://www.carbonsilk.com/node/deploying-nodejs-apps
 - http://howtonode.org/deploying-node-upstart-monit
 - http://dailyjs.com/2010/03/15/hosting-nodejs-apps
-- 
+- http://mark.stanton.org.au/2011/12/setting-up-ubuntuwordpress-on-amazon-ec2-part-2/
+- http://wp.tutsplus.com/tutorials/wordpress-multisite-beyond-basics-essentials-and-domain-mapping/
