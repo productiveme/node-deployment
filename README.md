@@ -150,7 +150,7 @@ Copy the `sunrise.php` file from the plugin's folder to the `wp-content` folder.
 
 **TODO:** Rewrite the notes below the line to apply to this configuration
 
----------------------------------------------------------------------------
+- - -
 
 [2.1]: http://wordpress.org/extend/plugins/wordpress-mu-domain-mapping/
 
