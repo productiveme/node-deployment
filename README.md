@@ -176,9 +176,6 @@ At this stage it might be handy to create the non-privileged `node` system user:
 
 	$ sudo adduser --system --shell /bin/bash --gecos "Node apps" --group --disabled-password --home /home/node node
 
-**TODO:** Modify notes below the line to be relevant to this adaptation
-- - -
-
 ### 4. The post-recieve hook
 
 **TODO:** Rewrite this secion without gitolite
