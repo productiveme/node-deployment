@@ -17,10 +17,10 @@ An example Node app is included to be deployed as a reverse proxy listening on p
 
 ### Software used
 
-- Node 0.8.9 (server)
-- Git 1.7.0.4 (server)
-- Monit 5.0.3 (server)
-- Upstart 0.6.5-8 (server)
+- Node 0.8.18 (server)
+- Git 1.7.9.5 (server)
+- Monit 5.3.2 (server)
+- Upstart 1.5 (server)
 
 ### Remote directory structures and file locations
 
