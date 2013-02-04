@@ -161,6 +161,7 @@ Change the default site's port
 #!bash
 sudo nano /etc/apache2/sites-enabled/000-default
 ```
+```
 <VirtualHost *:8000>
 ```
 Fix the broken RewriteRule in the .htaccess when on a different port than 80
