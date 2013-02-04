@@ -39,92 +39,76 @@ Other salient locations include:
 Launched a new Ubuntu Server 12.04.1 LTS 64-bit instance using the AWS Console.
 
 Installed updates and upgrades
-```
-#!bash
-$ sudo updatedb
-$ sudo apt-get update && sudo apt-get upgrade -y
-```
+
+	$ sudo updatedb
+	$ sudo apt-get update && sudo apt-get upgrade -y
+
 Installed Apache and the rewrite modules
-```
-#!bash
-$ sudo apt-get install apache2
-$ sudo a2enmod rewrite
-```
+
+	$ sudo apt-get install apache2
+	$ sudo a2enmod rewrite
 
 Launched a MySQL RDS instance using the AWS console
 
 Installed mysql-client tools
-```
-#!bash
-$ sudo apt-get install mysql-client-5.5
-```
+
+	$ sudo apt-get install mysql-client-5.5
+
 Installed PHP and some recommended modules
-```
-#!bash
-$ sudo apt-get install php5 libapache2-mod-php5 php5-suhosin php5-curl php-pear php5-mysql
-```
+	
+	$ sudo apt-get install php5 libapache2-mod-php5 php5-suhosin php5-curl php-pear php5-mysql
+
 Installed postfix to enable sending email
-```
-#!bash
-$ sudo pear install mail
-$ sudo pear install Net_SMTP
-$ sudo pear install Auth_SASL
-$ sudo pear install mail_mime
-$ sudo apt-get install postfix
-```
+	
+	$ sudo pear install mail
+	$ sudo pear install Net_SMTP
+	$ sudo pear install Auth_SASL
+	$ sudo pear install mail_mime
+	$ sudo apt-get install postfix
+
 Configure PHP to use the correct sendmail
-```
-#!bash
-$ sudo nano /etc/php5/apache2/php.ini
-```
+
+	$ sudo nano /etc/php5/apache2/php.ini
+
 Changed the sendmail_path to
-```
-#!bash
-sendmail_path = "/usr/sbin/sendmail -t -i"
-```
+
+	sendmail_path = "/usr/sbin/sendmail -t -i"
+
 **TODO:** Add configuration to setup AWS SES Email here 
 
 Installed Wordpress
-```
-#!bash
-$ wget http://wordpress.org/latest.tar.gz
-$ tar -xzf latest.tar.gz
-$ sudo cp -R wordpress/* /var/www/
-```
+	
+	$ wget http://wordpress.org/latest.tar.gz
+	$ tar -xzf latest.tar.gz
+	$ sudo cp -R wordpress/* /var/www/
+
 Fixed the permissions
-```
-#!bash
-$ sudo chown -R ubuntu:www-data /var/www
-$ sudo find /var/www -type d -exec chmod 2770 {} \;
-$ sudo find /var/www -type f -exec chmod 660 {} \;
-$ sudo usermod -a -G www-data ubuntu
-```
+
+	$ sudo chown -R ubuntu:www-data /var/www
+	$ sudo find /var/www -type d -exec chmod 2770 {} \;
+	$ sudo find /var/www -type f -exec chmod 660 {} \;
+	$ sudo usermod -a -G www-data ubuntu
+
 Enable wordpress to update directly to disk
-```
-#!bash
-$ sudo nano /var/www/wp-config.php
-```
+
+	$ sudo nano /var/www/wp-config.php
+
 and add the following
-```
-#!bash
-define('FS_METHOD', 'direct');
-```
+
+	define('FS_METHOD', 'direct');
+
 To get permalinks working, had to set AllowOverride for host in apache config
-```
-#!bash
-$ sudo nano /etc/apache2/sites-enabled/000-default
-``` 
+
+	$ sudo nano /etc/apache2/sites-enabled/000-default
+
 and change from AllowOverride none to
-```
-#!bash
-AllowOverride FileInfo
-```
+
+	AllowOverride FileInfo
+
 
 Bounced Apache
-```
-#!bash
-$ sudo service apache2 restart
-```
+	
+	$ sudo service apache2 restart
 
 ### 2. Setup Wordpress Multisite / Network
 
@@ -133,11 +117,10 @@ Rename and update your wp-config.php as normal from wp-config-sample.php.
 **TODO:** Add extra notes on how to setup MySQL RDS and connection strings
 
 First enable the option to install Network by adding the following line to the wp-config.php file just before "That's all, stop editing!" comment.
-```
-#!php
-/* Multisite */
-define('WP_ALLOW_MULTISITE', true);
-```
+
+	/* Multisite */
+	define('WP_ALLOW_MULTISITE', true);
+
 Install Network from the Tools menu, selecting the `Sub-domains` option.
 
 Note and apply the changes to the `wp-config.php` and `.htaccess` files.
@@ -147,33 +130,30 @@ Manually install the [Wordpress MU Domain Mapping][2.1] plugin.
 Copy the `sunrise.php` file from the plugin's folder to the `wp-content` folder.
 
 We'll want our apache to listen on port 8000 so the reverse proxy can listen on port 80 and direct traffic correctly.
-```
-#!bash
-sudo nano /etc/apache2/ports.conf
-```
+
+	$ sudo nano /etc/apache2/ports.conf
+
 Change the ports to 8000
-```
-NameVirtualHost *:8000
-Listen 8000
-```
+
+	NameVirtualHost *:8000
+	Listen 8000
+
 Change the default site's port
-```
-#!bash
-sudo nano /etc/apache2/sites-enabled/000-default
-```
-```
-<VirtualHost *:8000>
-```
+
+	$ sudo nano /etc/apache2/sites-enabled/000-default
+
+Change port 80 to 8000
+
+	<VirtualHost *:8000>
+
 Fix the broken RewriteRule in the .htaccess when on a different port than 80
-```
-#!bash
-sudo nano /var/www/.htaccess
-```
+
+	$ sudo nano /var/www/.htaccess
+
 Replace the RewriteRule for `^wp-admin$`
-```
-# add a trailing slash to /wp-admin
-RewriteRule ^wp-admin$ http://%{SERVER_NAME}/wp-admin/ [R=302,L]
-```
+
+	# add a trailing slash to /wp-admin
+	RewriteRule ^wp-admin$ http://%{SERVER_NAME}/wp-admin/ [R=302,L]
 
 [2.1]: http://wordpress.org/extend/plugins/wordpress-mu-domain-mapping/
 
