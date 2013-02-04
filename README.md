@@ -1,3 +1,7 @@
+A tutorial / set of notes as well as sample scripts on how to configure an Amazon EC2 Ubuntu server for running a Wordpress Network together with custom Node / Meteor apps. Lots of credit to J Edwards for his node-deployment notes that kickstarted me. (Cloned from [https://github.com/jedrichards/node-deployment][0.1])
+
+[0.1]: https://github.com/jedrichards/node-deployment
+
 ## EC2 server setup for Node / Meteor / Wordpress Network
 
 This repo contains the scripts and config files to configure an Amazon EC2 Ubuntu server for hosting a wordpress network, and some additional node or meteor apps.
