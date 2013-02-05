@@ -115,6 +115,8 @@ Bounce Apache
 
 Remember to generate and apply new random authentication keys and salts from https://api.wordpress.org/secret-key/1.1/salt/ 
 
+	$ sudo nano /var/www/wp-config.php
+
 **TODO:** Add extra notes on how to setup MySQL RDS and connection strings
 
 Enable the option to install Network by adding the following line to the `wp-config.php` file just before "That's all, stop editing!" comment.
