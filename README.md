@@ -113,7 +113,7 @@ Bounce Apache
 
 ### 2. Setup Wordpress Multisite / Network
 
-Remember to generate and apply new keys and salt for the cookies from https://api.wordpress.org/secret-key/1.1/salt/ 
+Remember to generate and apply new random authentication keys and salts from https://api.wordpress.org/secret-key/1.1/salt/ 
 
 **TODO:** Add extra notes on how to setup MySQL RDS and connection strings
 
