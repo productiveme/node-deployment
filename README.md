@@ -89,6 +89,8 @@ Fix the permissions
 	$ sudo find /var/www -type f -exec chmod 660 {} \;
 	$ sudo usermod -a -G www-data ubuntu
 
+Rename and update `wp-config.php` as normal from `wp-config-sample.php`.
+
 Enable wordpress to update directly to disk
 
 	$ sudo nano /var/www/wp-config.php
@@ -111,7 +113,7 @@ Bounce Apache
 
 ### 2. Setup Wordpress Multisite / Network
 
-Rename and update `wp-config.php` as normal from `wp-config-sample.php`.
+Remember to generate and apply new keys and salt for the cookies from https://api.wordpress.org/secret-key/1.1/salt/ 
 
 **TODO:** Add extra notes on how to setup MySQL RDS and connection strings
 
