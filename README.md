@@ -74,7 +74,35 @@ Change the sendmail_path to
 
 	sendmail_path = "/usr/sbin/sendmail -t -i"
 
-**TODO:** Add configuration to setup AWS SES Email here 
+#### Setup Amazon SES for relaying email
+
+Follow the guide on Amazon for [Integrating Amazon SES with Postfix][1.1]
+
+[1.1]: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/postfix.html
+
+To only send from verified senders/domains, replace the line `relayhost = email-smtp.us-east-1.amazonaws.com:25`
+
+	$ sudo nano /etc/postfix/main.cf
+
+with
+
+	sender_dependent_relayhost_maps = hash:/etc/postfix/relayhost_maps
+
+then add your verified senders/domains
+
+	$ sudo nano /etc/postfix/relayhost_maps
+
+in the following format
+
+	verified@example.com    email-smtp.us-east-1.amazonaws.com:25
+	@example.net            email-smtp.us-east-1.amazonaws.com:25
+
+and finally
+
+	$ sudo postmap /etc/postfix/relayhost_maps
+	$ sudo postfix reload
+
+- - -
 
 Install Wordpress
 	
@@ -291,13 +319,14 @@ Once Monit is properly up and running it exposes a similar command line API to U
 
 ### References
 
-- https://github.com/jedrichards/node-deployment
-- http://stackoverflow.com/questions/11211950/post-receive-hook-permission-denied-unable-to-create-file-error
-- https://github.com/joyent/node/wiki/Resources
-- http://clock.co.uk/tech-blogs/deploying-nodejs-apps
-- http://caolanmcmahon.com/posts/deploying_node_js_with_upstart
-- http://www.carbonsilk.com/node/deploying-nodejs-apps
-- http://howtonode.org/deploying-node-upstart-monit
-- http://dailyjs.com/2010/03/15/hosting-nodejs-apps
-- http://mark.stanton.org.au/2011/12/setting-up-ubuntuwordpress-on-amazon-ec2-part-2/
-- http://wp.tutsplus.com/tutorials/wordpress-multisite-beyond-basics-essentials-and-domain-mapping/
+- [https://github.com/jedrichards/node-deployment](https://github.com/jedrichards/node-deployment)
+- [http://stackoverflow.com/questions/11211950/post-receive-hook-permission-denied-unable-to-create-file-error](http://stackoverflow.com/questions/11211950/post-receive-hook-permission-denied-unable-to-create-file-error)
+- [https://github.com/joyent/node/wiki/Resources](https://github.com/joyent/node/wiki/Resources)
+- [http://clock.co.uk/tech-blogs/deploying-nodejs-apps](http://clock.co.uk/tech-blogs/deploying-nodejs-apps)
+- [http://caolanmcmahon.com/posts/deploying_node_js_with_upstart](http://caolanmcmahon.com/posts/deploying_node_js_with_upstart)
+- [http://www.carbonsilk.com/node/deploying-nodejs-apps](http://www.carbonsilk.com/node/deploying-nodejs-apps)
+- [http://howtonode.org/deploying-node-upstart-monit](http://howtonode.org/deploying-node-upstart-monit)
+- [http://dailyjs.com/2010/03/15/hosting-nodejs-apps](http://dailyjs.com/2010/03/15/hosting-nodejs-apps)
+- [http://mark.stanton.org.au/2011/12/setting-up-ubuntuwordpress-on-amazon-ec2-part-2/](http://mark.stanton.org.au/2011/12/setting-up-ubuntuwordpress-on-amazon-ec2-part-2/)
+- [http://wp.tutsplus.com/tutorials/wordpress-multisite-beyond-basics-essentials-and-domain-mapping/](http://wp.tutsplus.com/tutorials/wordpress-multisite-beyond-basics-essentials-and-domain-mapping/)
+- [http://docs.aws.amazon.com/ses/latest/DeveloperGuide/postfix.html](http://docs.aws.amazon.com/ses/latest/DeveloperGuide/postfix.html)
