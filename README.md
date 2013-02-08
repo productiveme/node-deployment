@@ -80,6 +80,20 @@ Follow the guide on Amazon for [Integrating Amazon SES with Postfix][1.1]
 
 [1.1]: http://docs.aws.amazon.com/ses/latest/DeveloperGuide/postfix.html
 
+To enable sending on port 587
+
+	$ sudo nano /etc/postfix/master.cf
+
+and ensure the following:
+
+	submission inet n      -       n       -       -       smtpd
+		-o smtpd_sasl_auth_enable=yes
+		-o smtpd_client_restrictions=permit_sasl_authenticated,permit_mynetworks,check_relay_domains,reject
+
+then restart postfix
+
+	$ sudo /etc/init.d/postfix restart
+
 To only send from verified senders/domains, replace the line `relayhost = email-smtp.us-east-1.amazonaws.com:25`
 
 	$ sudo nano /etc/postfix/main.cf
@@ -94,8 +108,8 @@ then add your verified senders/domains
 
 in the following format
 
-	verified@example.com    email-smtp.us-east-1.amazonaws.com:25
-	@example.net            email-smtp.us-east-1.amazonaws.com:25
+	verified@example.com    email-smtp.us-east-1.amazonaws.com:587
+	@example.net            email-smtp.us-east-1.amazonaws.com:587
 
 and finally
 
