@@ -17,7 +17,8 @@ An example Node app is included to be deployed as a reverse proxy listening on p
 
 ### Software used
 
-- Node 0.8.18 (server)
+- Node 0.8.18 (server) (Installed with the [rock-solid nodejs installation script generator](http://apptob.org/))
+
 - Git 1.7.9.5 (server)
 - Monit 5.3.2 (server)
 - Upstart 1.5 (server)
