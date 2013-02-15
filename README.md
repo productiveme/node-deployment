@@ -57,7 +57,7 @@ Install mysql-client tools
 
 Install PHP and some recommended modules
 	
-	$ sudo apt-get install php5 libapache2-mod-php5 php5-suhosin php5-curl php-pear php5-mysql
+	$ sudo apt-get install php5 libapache2-mod-php5 php5-suhosin php5-curl php-pear php5-mysql php5-gd
 
 Install postfix to enable sending email
 	
