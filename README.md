@@ -39,11 +39,10 @@ Other salient locations include:
 ### 1. Installing Apache/Wordpress
 Launched a new Ubuntu Server 12.04.1 LTS 64-bit instance using the AWS Console.
 
-Fix locale issue
-	
-	$ sudo locale-gen en_US en_US.UTF-8
-	$ sudo dpkg-reconfigure locales 
+Fix locale issue by adding this line to /etc/environment; then reboot
 
+	LC_ALL="en_US.UTF-8"
+	
 Install updates and upgrades
 
 	$ sudo updatedb
