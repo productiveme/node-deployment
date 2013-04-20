@@ -42,7 +42,7 @@ Launched a new Ubuntu Server 12.04.1 LTS 64-bit instance using the AWS Console.
 Fix locale issue
 	
 	$ sudo locale-gen en_US en_US.UTF-8
-	$ dpkg-reconfigure locales 
+	$ sudo dpkg-reconfigure locales 
 
 Install updates and upgrades
 
