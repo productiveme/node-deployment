@@ -1,0 +1,10 @@
+{
+	"port": 9001,
+	"repositories" : [
+		{
+			"repo": "productiveme/node-deployment",
+			"branch": "master",
+			"local_path": "/home/ubuntu/node-deployment"
+		}
+	]
+}

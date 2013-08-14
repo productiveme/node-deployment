@@ -46,7 +46,7 @@ server = http.createServer (req,res) ->
 
 					log "POST received for #{repo.repo} ... "
 
-					exec "cd #{repo.local_path} && sudo .hooks/deploy.sh", (error, stdout, stderr) ->
+					exec "cd #{repo.local_path} && sudo sh .hooks/deploy.sh", (error, stdout, stderr) ->
 						return log error if error
 						return log stderr if stderr
 						log stdout 
@@ -55,34 +55,13 @@ server = http.createServer (req,res) ->
 			res.writeHead 200, "Content-type": "text/html"
 			res.end()
 
-server.listen port
+server.listen port, ->
 
-log "Listening on port #{port} ..."
-
-# // Import execFile, to run our bash script
-# var execFile = require('child_process').execFile;
-
-# var repo, _i, _len, _ref;
-
-# _ref = options.repositories;
-# for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-# 	repo = _ref[_i];
-
-# 	gith({
-# 		repo: repo.repo
-# 	}).on( 'all', function( payload ) {
-
-# 		if(payload.branch === 'master') {
-
-# 			log( payload.repo + " POST received..." )
-			
-# 			// Exec a shell script
-# 			execFile(options.command, function(error, stdout, stderr) {
-# 				// Log success in some manner
-# 				log( stdout );
-# 			});
-
-# 		}
+	try
+		process.setgid "node"
+		process.setuid "node"
+		log "Downgraded to node user."
+	catch e
+		log "Unable to downgrade permissions."
 	
-# 	});
-# }
+	log "Listening on port #{port} ..."

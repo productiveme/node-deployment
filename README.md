@@ -158,6 +158,10 @@ Bounce Apache
 	
 	$ sudo service apache2 restart
 
+
+
+
+
 ### 2. Setup Wordpress Multisite / Network
 
 Remember to generate and apply new random authentication keys and salts from https://api.wordpress.org/secret-key/1.1/salt/ 
@@ -207,6 +211,9 @@ Replace the RewriteRule for `^wp-admin$`
 
 [2.1]: http://wordpress.org/extend/plugins/wordpress-mu-domain-mapping/
 
+
+
+
 ### 3. The Node Application
 
 I've added the Node reverse proxy application code to this repo [here](https://github.com/productiveme/node-deployment/tree/master/node-proxy) so you can look around the files. It uses nodejitsu's own [node-http-proxy](https://github.com/nodejitsu/node-http-proxy) under the hood, which apparently is a robust proxy that sees a good deal of testing and production usage.
@@ -227,6 +234,9 @@ At this stage it might be handy to create the non-privileged `node` system user:
 
 	$ sudo adduser --system --shell /bin/bash --gecos "Node apps" --group --disabled-password --home /home/node node
 
+
+
+
 ### 4. The continuous deploy web-hook
 
 At this stage I'll assume you have some application code added to a fully working remote Git repo on the server and are able to `push` and `pull` to it with ease from your workstation.
@@ -235,68 +245,37 @@ The task of the web-hook is to receive a POST from github.com or bitbucket.org t
 
 I've added the Node deploy application code to this repo [here](https://github.com/productiveme/node-deployment/tree/master/node-deploy) so you can look around the files.
 
-The app reads a JSON file specifying the repositories to listen for and port to listen on. Once configured, you'll need to add the app to the reverse proxy and setup your webhook on your git repository provider.
+The app reads a JSON file specifying the repositories to listen for and port to listen on. A typical configuration file looks like this:
+
+	{
+		"port": 9001,
+		"repositories" : [
+			{
+				"repo": "productiveme/node-deployment",
+				"branch": "master",
+				"local_path": "/home/ubuntu/node-deployment"
+			}
+		]
+	}
+
+Where `repositories` contains an array of repositories to listen for. And each repository is defined by `repo` set to owner/repo_name, `branch` set to the branch to deploy and watch for and `local_path` set to the local location of the repo on the deployment server.
+
+The script will assume a `.hooks/deploy.sh` script file exists in the root of `local_path` and will execute it to deploy the latest code.
+
+To successfully execute such a deploy script, the node user will require root permissions, so we will set that up in the sudoers.
 
 	$ sudo visudo
+
+Append the following line and save:
 
 	node ALL = (root) NOPASSWD: /bin/sh /*/.hooks/deploy.sh
 
-	.hooks/deploy.sh
+Once configured, you'll need to add the app to the reverse proxy and setup your webhook on your git repository provider to match. Further, I suggest you create a ssh public key as the root user and add this as a deploy key to your git repository provider. Then the first task in the script could be a pull or reset to get the latest code.
 
-<!-- 
-At this stage I'll assume you have some application code added to a fully working remote Git repo on the server and are able to `push` and `pull` to it with ease from your workstation.
 
-The task of the Git `post-receive` hook is to invoke a generic deploy script which moves the Node app files out of the bare Git repo and into whichever location we decide to store our active node apps on the server whenever new code is pushed. First you need to become Git's `git` user:
 
-	$ sudo su git
 
-Navigate to the hooks folder for the relevant repo and start to edit the `post-receive` file. It's important that this file is owned by and executable by the `git` user, since that's the user that'll be executing it.
-
-	$ cd /home/git/repositories/node-proxy.git/hooks
-	$ touch post-receive        # If required, may already exist
-	$ chmod u+x post-receive    # If required, may already be executable
-	$ nano post-receive
-
-Make the contents look like (or similar to) the example `post-receive` hook in this repo [here](https://github.com/productiveme/node-deployment/blob/master/post-receive).
-
-In the hook we're attempting to invoke the `/var/node/node-deploy` generic deployment script via a `sudo`'ed `sh` command while passing down a configuration environment variable called `APP_NAME` (we'll go on to make that script in the next section). Since this `post-receive` hook will not be executing in an interactive shell it will bork at the `git` user's attempt to `sudo`, so the next thing we need to do is give the `git` user the right to invoke `/var/node/node-deploy` with the `sh` command without a password.
-
-Start to edit the `/etc/sudoers` file:
-
-	$ sudo visudo
-
-And add the following line at the bottom:
-
-	git ALL = (root) NOPASSWD: /bin/sh /var/node/node-deploy
-
-(I think) this isn't as big a security concern as one might think since we're only giving the `git` user password-less `sudo` rights to this one particular script, which itself will only be editable and viewable by `root`.
-
-We're not quite done with `/etc/sudoers` though, we need to stop `sudo` stripping out our `APP_NAME` environment variable. Add the following at the top just above the `Defaults env_reset` line:
-
-	Defaults env_keep += "APP_NAME"
-
-Again, this shouldn't be too much of a security concern because we'll be handling the contents of `APP_NAME` carefully in `node-deploy`.
-
-You can see my version of sudoers [here](https://github.com/productiveme/node-deployment/blob/master/sudoers). It just has the default contents and the changes mentioned above.
-
-Save and exit `/etc/sudoers`. We now should be in a postion where we can push to our Gitolite repo and have the `post-receive` execute, and having granted the `git` user the right to invoke the deployment script as `root` without asking for a password we shoud have the power to do any kind of filesystem manipulation we like. Now we need to write that script. -->
-
-### 5. The generic deployment script
-
-**TODO:** Rewrite this section to fit with post-receive hook
-
-<!--I'm calling this a "generic" deployment script because I'm aiming for it to be useful for publishing any reasonably non-complex Node app. To this end we use the `APP_NAME` value passed in from the `post-receive` hook to tailor the behaviour of the script. It doesn't have to be executable since we're invoking it via the `sh` command. Go and ahead and create it:
-
-	$ cd /var/node
-	$ sudo touch node-deploy
-
-An example of this script is in this repo [here](https://github.com/productiveme/node-deployment/blob/master/node-deploy).
-
-The script above is fairly well commented so I won't go into much detail but basically it's simply syncronising the contents of the node app directory (in this case `/var/node/node-proxy`) with the latest revision of the files in the bare Gitolite repo via `git checkout -f`. Once that's been done it's changing the ownership of the files to the `node` user and restarting the app via Monit.
-
-You don't have to keep your node apps in `/var/node`, anywhere will likely do, but after some research it seemed like a reasonably sensible location.-->
-
-### 6. Upstart
+### 5. Upstart
 
 [Upstart](http://upstart.ubuntu.com) is an event driven daemon which handles the automatic starting of services at boot, as well as optionally respawning them if their associated process dies unexpectedly. Additionally it exposes a handy command line API for manipulating the services with commands like `sudo start servicename`, `sudo stop servicename`, `sudo restart servicename` and `sudo status servicename` etc.
 
@@ -306,7 +285,7 @@ In the context of a Node app we can use Upstart to daemonize the app into a syst
 
 Upstart is already on your box if you're running Ubuntu 10.04 or later, but if you don't have it I think it's installable via `apt-get`.
 
-An example Upstart job configuration is in this repo [here](https://github.com/productiveme/node-deployment/blob/master/node-proxy.conf).
+An example Upstart job configuration is in this repo [here](https://github.com/productiveme/node-deployment/blob/master/node-proxy.conf) and [here](https://github.com/productiveme/node-deployment/blob/master/node-deploy.conf).
 
 Once you have your job config file in place run the following command to have Upstart list out all its valid jobs. If yours is *not* in the list it means you have some sort of basic syntax error:
 
@@ -314,7 +293,11 @@ Once you have your job config file in place run the following command to have Up
 
 If all is well Upstart will now start and stop your Node app on shutdown and reboot, respawn it if it crashes, and allow you to manually control it via commands like `sudo start node-proxy`. If your `start` command fails to spin up the app as expected it means that some or all of the Upstart scripts are failing. One gotcha is that environment variables defined in an Upstart `env` stanza do not expand when concatenated.
 
-### 7. Monit
+
+
+
+
+### 6. Monit
 
 [Monit](http://mmonit.com/monit) is a utility for managing and monitoring all sorts of UNIX system resources (processes, web services, files, directories  etc). We'll be using it to monitor the health of our proxy Node app, and indeed any other apps we decide to host on this box.
 
