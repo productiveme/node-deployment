@@ -57,6 +57,9 @@
           }
           if (repoOk && branchOk) {
             log("POST received for " + repo.repo + " ... ");
+            log({
+              sh: "cd " + (path.join(repo.local_path, '.hooks')) + " && sudo deploy.sh"
+            });
             exec("cd " + (path.join(repo.local_path, '.hooks')) + " && sudo deploy.sh", function(error, stdout, stderr) {
               if (error) {
                 return log(error);
