@@ -48,7 +48,9 @@ server = http.createServer (req,res) ->
 					log "POST received for #{repo.repo} ... "
 
 					exec "cd #{repo.local_path} && sudo '.hooks/deploy.sh'", (error, stdout, stderr) ->
-						log stdout
+						return log error if error
+						return log stderr if stderr
+						log stdout 
 						return
 
 			res.writeHead 200, "Content-type": "text/html"
