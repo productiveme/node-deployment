@@ -74,8 +74,18 @@
     }
   });
 
-  server.listen(port);
+  server.listen(port, function() {
+    var e;
 
-  log("Listening on port " + port + " ...");
+    try {
+      process.setgid("node");
+      process.setuid("node");
+      log("Downgraded to node user.");
+    } catch (_error) {
+      e = _error;
+      log("Unable to downgrade permissions.");
+    }
+    return log("Listening on port " + port + " ...");
+  });
 
 }).call(this);
