@@ -239,9 +239,9 @@ The app reads a JSON file specifying the repositories to listen for and port to 
 
 	$ sudo visudo
 
-	node ALL = (root) NOPASSWD: /bin/sh /*/.deploy/hook.sh
+	node ALL = (root) NOPASSWD: /bin/sh /*/.hooks/deploy.sh
 
-	.deploy/hook.sh
+	.hooks/deploy.sh
 
 <!-- 
 At this stage I'll assume you have some application code added to a fully working remote Git repo on the server and are able to `push` and `pull` to it with ease from your workstation.
