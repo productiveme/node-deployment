@@ -4,6 +4,7 @@
   "description": "Node based deployment.",
   "main": "main.js",
   "dependencies": {
-    "gith": "~1.0.4"
+    "gith": "~1.0.4",
+    "underscore": "~1.5.1"
   }
 }

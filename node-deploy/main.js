@@ -1,5 +1,5 @@
 (function() {
-  var fs, http, log, options, port, querystring, server, util;
+  var execFile, fs, http, log, options, port, querystring, server, util, _;
 
   fs = require("fs");
 
@@ -8,6 +8,10 @@
   http = require("http");
 
   querystring = require("querystring");
+
+  _ = require("underscore");
+
+  execFile = require("child_process").execFile;
 
   log = function(item) {
     var output;
@@ -29,10 +33,31 @@
         return data += chunk;
       });
       return req.on("end", function() {
-        var payload;
+        var branchOk, commit, payload, repo, repoOk, _i, _j, _len, _len1, _ref, _ref1;
 
         payload = JSON.parse(querystring.unescape(data.replace(/(^payload=)|(\+)/ig, "")));
-        console.log(payload.commits);
+        _ref = options.repositories;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          repo = _ref[_i];
+          repoOk = repo.repo.match(new RegExp("" + payload.repository.owner + "/" + payload.repository.name)).length > 0;
+          branchOk = false;
+          _ref1 = payload.commits;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            commit = _ref1[_j];
+            if (_.contains(payload.branches || [], repo.branch) || repo.branch === options.branch) {
+              branchOk = true;
+            }
+            if (branchOk) {
+              break;
+            }
+          }
+          if (repoOk && branchOk) {
+            log("POST received for " + repo.repo + " ... ");
+            execFile(options.command, function(error, stdout, stderr) {
+              return log(stdout);
+            });
+          }
+        }
         res.writeHead(200, {
           "Content-type": "text/html"
         });

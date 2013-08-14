@@ -3,6 +3,7 @@
 	"repositories" : [
 		{
 			"repo": "productiveme/firstfifty",
+			"branch": "master",
 			"command": "/home/ubuntu/deploy-firstfifty.sh"
 		}
 	]
