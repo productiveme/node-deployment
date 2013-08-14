@@ -32,7 +32,7 @@
         var payload;
 
         payload = JSON.parse(querystring.unescape(data.replace(/(^payload=)|(\+)/ig, "")));
-        console.log(payload.commits[0].branches);
+        console.log(payload.commits);
         res.writeHead(200, {
           "Content-type": "text/html"
         });
