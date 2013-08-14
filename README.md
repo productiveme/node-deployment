@@ -237,6 +237,12 @@ I've added the Node deploy application code to this repo [here](https://github.c
 
 The app reads a JSON file specifying the repositories to listen for and port to listen on. Once configured, you'll need to add the app to the reverse proxy and setup your webhook on your git repository provider.
 
+	$ sudo visudo
+
+	node ALL = (root) NOPASSWD: /bin/sh /*/.deploy/hook.sh
+
+	.deploy/hook.sh
+
 <!-- 
 At this stage I'll assume you have some application code added to a fully working remote Git repo on the server and are able to `push` and `pull` to it with ease from your workstation.
 

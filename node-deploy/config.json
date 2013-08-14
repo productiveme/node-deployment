@@ -4,7 +4,7 @@
 		{
 			"repo": "productiveme/firstfifty",
 			"branch": "master",
-			"command": "/home/ubuntu/deploy-firstfifty.sh"
+			"local_path": "/home/ubuntu/firstfifty"
 		}
 	]
 }
