@@ -4,10 +4,25 @@
 
 	var fs = require("fs");
 
+	/**
+	* Outputs information to stdout while prefixing an ISO 8601 date.
+	*/
+	function log(item) {
+
+		var output = new Date().toISOString()+" "+util.format.apply(null,arguments);
+
+		util.puts(output);
+	}
+
+
 	var options = JSON.parse(fs.readFileSync(__dirname+"/config.json"));
 
+	var port = options.port || 9001;
+
 	// Listen on specified port or 9001
-	var gith = require('gith').create( options.port || 9001 );
+	var gith = require('gith').create( port );
+
+	log( "Listening on port " + port + " ..." );
 
 	// Import execFile, to run our bash script
 	var execFile = require('child_process').execFile;
@@ -24,15 +39,18 @@
 
 			if(payload.branch === 'master') {
 
+				log( payload.repo + " POST received..." )
+				
 				// Exec a shell script
 				execFile(options.command, function(error, stdout, stderr) {
 					// Log success in some manner
-					console.log( stdout );
+					log( stdout );
 				});
 
 			}
 		
 		});
 	}
+
 
 })();
