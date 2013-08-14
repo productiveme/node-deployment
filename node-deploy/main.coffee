@@ -47,7 +47,7 @@ server = http.createServer (req,res) ->
 
 					log "POST received for #{repo.repo} ... "
 
-					exec "cd #{repo.local_path} && sudo '.hooks/deploy.sh'", (error, stdout, stderr) ->
+					exec "cd #{ path.join repo.local_path, '.hooks' } && sudo deploy.sh", (error, stdout, stderr) ->
 						return log error if error
 						return log stderr if stderr
 						log stdout 
