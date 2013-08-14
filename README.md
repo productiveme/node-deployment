@@ -227,10 +227,17 @@ At this stage it might be handy to create the non-privileged `node` system user:
 
 	$ sudo adduser --system --shell /bin/bash --gecos "Node apps" --group --disabled-password --home /home/node node
 
-### 4. The post-recieve hook
+### 4. The continuous deploy web-hook
 
-**TODO:** Rewrite this secion without gitolite
-<!--
+At this stage I'll assume you have some application code added to a fully working remote Git repo on the server and are able to `push` and `pull` to it with ease from your workstation.
+
+The task of the web-hook is to receive a POST from github.com or bitbucket.org to indicate a code change to the repository, and to execute an installation script when the 'master' branch was updated.
+
+I've added the Node deploy application code to this repo [here](https://github.com/productiveme/node-deployment/tree/master/node-deploy) so you can look around the files.
+
+The app reads a JSON file specifying the repositories to listen for and port to listen on. Once configured, you'll need to add the app to the reverse proxy and setup your webhook on your git repository provider.
+
+<!-- 
 At this stage I'll assume you have some application code added to a fully working remote Git repo on the server and are able to `push` and `pull` to it with ease from your workstation.
 
 The task of the Git `post-receive` hook is to invoke a generic deploy script which moves the Node app files out of the bare Git repo and into whichever location we decide to store our active node apps on the server whenever new code is pushed. First you need to become Git's `git` user:
@@ -266,7 +273,7 @@ Again, this shouldn't be too much of a security concern because we'll be handlin
 
 You can see my version of sudoers [here](https://github.com/productiveme/node-deployment/blob/master/sudoers). It just has the default contents and the changes mentioned above.
 
-Save and exit `/etc/sudoers`. We now should be in a postion where we can push to our Gitolite repo and have the `post-receive` execute, and having granted the `git` user the right to invoke the deployment script as `root` without asking for a password we shoud have the power to do any kind of filesystem manipulation we like. Now we need to write that script.-->
+Save and exit `/etc/sudoers`. We now should be in a postion where we can push to our Gitolite repo and have the `post-receive` execute, and having granted the `git` user the right to invoke the deployment script as `root` without asking for a password we shoud have the power to do any kind of filesystem manipulation we like. Now we need to write that script. -->
 
 ### 5. The generic deployment script
 

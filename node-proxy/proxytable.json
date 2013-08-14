@@ -1,6 +1,7 @@
 {
     "my-meteor-app.my-domain.com" : "127.0.0.1:8001",
     "my-domain.com/api" : "127.0.0.1:8002",
+    "my-node-app.com/deploy-hook" : "127.0.0.1:8080",
     "my-node-app.com" : "127.0.0.1:8003",
     ".*" : "127.0.0.1:8000"
 }

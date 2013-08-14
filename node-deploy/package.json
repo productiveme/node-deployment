@@ -1,0 +1,9 @@
+{
+  "name": "node-deploy",
+  "version": "0.0.1",
+  "description": "Node based deployment.",
+  "main": "main.js",
+  "dependencies": {
+    "gith": "~1.0.4"
+  }
+}

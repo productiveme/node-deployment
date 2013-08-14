@@ -1,0 +1,9 @@
+{
+	"port": 8080,
+	"repositories" : [
+		{
+			"repo": "productiveme/firstfifty",
+			"command": "/home/ubuntu/deploy-firstfifty.sh"
+		}
+	]
+}
