@@ -39,17 +39,11 @@
         _ref = options.repositories;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           repo = _ref[_i];
-          log(repo);
           repoOk = repo.repo.match(new RegExp("" + payload.repository.owner + "/" + payload.repository.name)).length > 0;
-          log({
-            repoOk: repoOk,
-            payload: payload.repository
-          });
           branchOk = false;
           _ref1 = payload.commits;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             commit = _ref1[_j];
-            log(commit);
             if (_.contains(commit.branches || [], repo.branch) || commit.branch === repo.branch) {
               branchOk = true;
             }
@@ -57,13 +51,10 @@
               break;
             }
           }
-          log({
-            branchOk: branchOk
-          });
           if (repoOk && branchOk) {
             log("POST received for " + repo.repo + " ... ");
-            execFile(options.command, function(error, stdout, stderr) {
-              return log(stdout);
+            execFile(repo.command, function(error, stdout, stderr) {
+              log(stdout);
             });
           }
         }
