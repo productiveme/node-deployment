@@ -33,22 +33,24 @@
         return data += chunk;
       });
       return req.on("end", function() {
-        var branchOk, commit, payload, repo, repoOk, _i, _j, _len, _len1, _ref, _ref1;
+        var branchOk, commit, payload, repo, repoOk, _i, _j, _len, _len1, _ref, _ref1, _ref2;
 
         payload = JSON.parse(querystring.unescape(data.replace(/(^payload=)|(\+)/ig, "")));
         _ref = options.repositories;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           repo = _ref[_i];
-          repoOk = repo.repo.match(new RegExp("" + payload.repository.owner + "/" + payload.repository.name)).length > 0;
-          branchOk = false;
-          _ref1 = payload.commits;
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            commit = _ref1[_j];
-            if (_.contains(commit.branches || [], repo.branch) || commit.branch === repo.branch) {
-              branchOk = true;
-            }
-            if (branchOk) {
-              break;
+          repoOk = repo.repo.match(new RegExp("" + (((_ref1 = payload.repository.owner) != null ? _ref1.name : void 0) || payload.repository.owner) + "/" + payload.repository.name)).length > 0;
+          branchOk = new RegExp("refs\/heads\/" + repo.branch).test(payload.ref || payload.base_ref || "");
+          if (!branchOk) {
+            _ref2 = payload.commits;
+            for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+              commit = _ref2[_j];
+              if (_.contains(commit.branches || [], repo.branch) || commit.branch === repo.branch) {
+                branchOk = true;
+              }
+              if (branchOk) {
+                break;
+              }
             }
           }
           if (repoOk && branchOk) {
