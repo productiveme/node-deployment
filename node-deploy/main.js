@@ -4,9 +4,7 @@
 
 	var fs = require("fs");
 
-	var options = {
-		router : JSON.parse(fs.readFileSync(__dirname+"/config.json"))
-	};
+	var options = JSON.parse(fs.readFileSync(__dirname+"/config.json"));
 
 	// Listen on specified port or 9001
 	var gith = require('gith').create( options.port || 9001 );
