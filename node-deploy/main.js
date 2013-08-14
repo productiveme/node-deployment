@@ -3,6 +3,7 @@
 	"use strict";
 
 	var fs = require("fs");
+	var util = require("util");
 
 	/**
 	* Outputs information to stdout while prefixing an ISO 8601 date.
