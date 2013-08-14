@@ -1,57 +1,48 @@
-(function () {
+(function() {
+  var fs, http, log, options, port, querystring, server, util;
 
-	"use strict";
+  fs = require("fs");
 
-	var fs = require("fs");
-	var util = require("util");
+  util = require("util");
 
-	/**
-	* Outputs information to stdout while prefixing an ISO 8601 date.
-	*/
-	function log(item) {
+  http = require("http");
 
-		var output = new Date().toISOString()+" "+util.format.apply(null,arguments);
+  querystring = require("querystring");
 
-		util.puts(output);
-	}
+  log = function(item) {
+    var output;
 
+    output = new Date().toISOString() + " " + util.format.apply(null, arguments);
+    return util.puts(output);
+  };
 
-	var options = JSON.parse(fs.readFileSync(__dirname+"/config.json"));
+  options = JSON.parse(fs.readFileSync("" + __dirname + "/config.json"));
 
-	var port = options.port || 9001;
+  port = options.port || 9001;
 
-	// Listen on specified port or 9001
-	var gith = require('gith').create( port );
+  server = http.createServer(function(req, res) {
+    var data;
 
-	log( "Listening on port " + port + " ..." );
+    if (req.method === "POST") {
+      data = "";
+      req.on("data", function(chunk) {
+        return data += chunk;
+      });
+      return req.on("end", function() {
+        var payload;
 
-	// Import execFile, to run our bash script
-	var execFile = require('child_process').execFile;
+        payload = JSON.parse(querystring.unescape(data));
+        console.log(payload);
+        res.writeHead(200, {
+          "Content-type": "text/html"
+        });
+        return res.end();
+      });
+    }
+  });
 
-	var repo, _i, _len, _ref;
+  server.listen(port);
 
-	_ref = options.repositories;
-	for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-		repo = _ref[_i];
+  log("Listening on port " + port + " ...");
 
-		gith({
-			repo: repo.repo
-		}).on( 'all', function( payload ) {
-
-			if(payload.branch === 'master') {
-
-				log( payload.repo + " POST received..." )
-				
-				// Exec a shell script
-				execFile(options.command, function(error, stdout, stderr) {
-					// Log success in some manner
-					log( stdout );
-				});
-
-			}
-		
-		});
-	}
-
-
-})();
+}).call(this);
