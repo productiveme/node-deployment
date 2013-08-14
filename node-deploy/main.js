@@ -31,7 +31,7 @@
       return req.on("end", function() {
         var payload;
 
-        payload = JSON.parse(querystring.unescape(data.replace(/^payload=/i, "")));
+        payload = JSON.parse(querystring.unescape(data.replace(/(^payload=)|(\+)/i, "")));
         console.log(payload);
         res.writeHead(200, {
           "Content-type": "text/html"
