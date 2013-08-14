@@ -1,5 +1,5 @@
 (function() {
-  var exec, fs, http, log, options, path, port, querystring, server, util, _;
+  var exec, fs, http, log, options, port, querystring, server, util, _;
 
   fs = require("fs");
 
@@ -12,8 +12,6 @@
   _ = require("underscore");
 
   exec = require("child_process").exec;
-
-  path = require("path");
 
   log = function(item) {
     var output;
@@ -60,7 +58,7 @@
             log({
               sh: "cd " + (path.join(repo.local_path, '.hooks')) + " && sudo deploy.sh"
             });
-            exec("cd " + (path.join(repo.local_path, '.hooks')) + " && sudo deploy.sh", function(error, stdout, stderr) {
+            exec("cd " + repo.local_path + " && sudo .hooks/deploy.sh", function(error, stdout, stderr) {
               if (error) {
                 return log(error);
               }

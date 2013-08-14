@@ -4,7 +4,6 @@ http = require "http"
 querystring = require "querystring"
 _ = require "underscore"
 {exec} = require "child_process"
-path = require "path"
 
 # Outputs information to stdout while prefixing an ISO 8601 date.
 log = (item) ->
@@ -49,7 +48,7 @@ server = http.createServer (req,res) ->
 
 					log sh: "cd #{ path.join repo.local_path, '.hooks' } && sudo deploy.sh"
 
-					exec "cd #{ path.join repo.local_path, '.hooks' } && sudo deploy.sh", (error, stdout, stderr) ->
+					exec "cd #{repo.local_path} && sudo .hooks/deploy.sh", (error, stdout, stderr) ->
 						return log error if error
 						return log stderr if stderr
 						log stdout 
