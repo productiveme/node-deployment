@@ -260,7 +260,7 @@ The app reads a JSON file specifying the repositories to listen for and port to 
 
 Where `repositories` contains an array of repositories to listen for. And each repository is defined by `repo` set to owner/repo_name, `branch` set to the branch to deploy and watch for and `local_path` set to the local location of the repo on the deployment server.
 
-The script will assume a `.hooks/deploy.sh` script file exists in the root of `local_path` and will execute it to deploy the latest code.
+The script will assume a `.hooks/deploy.sh` script file exists in the root of `local_path` and will execute it **from the root of the repo** to deploy the latest code.
 
 To successfully execute such a deploy script, the node user will require root permissions, so we will set that up in the sudoers.
 
