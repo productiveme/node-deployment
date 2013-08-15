@@ -1,5 +1,5 @@
 (function() {
-  var exec, fs, http, log, options, port, querystring, server, util, _;
+  var exec, fs, http, log, options, path, port, querystring, server, util, _;
 
   fs = require("fs");
 
@@ -12,6 +12,8 @@
   _ = require("underscore");
 
   exec = require("child_process").exec;
+
+  path = require("path");
 
   log = function(item) {
     var output;
@@ -55,7 +57,7 @@
           }
           if (repoOk && branchOk) {
             log("POST received for " + repo.repo + " ... ");
-            exec("cd " + repo.local_path + " && sudo /bin/sh .hooks/deploy.sh", function(error, stdout, stderr) {
+            exec("sudo /bin/sh " + (path.join(repo.local_path, '.hooks/deploy.sh')), function(error, stdout, stderr) {
               if (error) {
                 return log(error);
               }
