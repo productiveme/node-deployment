@@ -268,7 +268,7 @@ To successfully execute such a deploy script, the node user will require root pe
 
 Append the following line and save:
 
-	node ALL = (root) NOPASSWD: /bin/sh /*/.hooks/deploy.sh
+	node ALL = (root) NOPASSWD: /bin/sh .hooks/deploy.sh
 
 Once configured, you'll need to add the app to the reverse proxy and setup your webhook on your git repository provider to match. Further, I suggest you create a ssh public key as the root user and add this as a deploy key to your git repository provider. Then the first task in the script could be a pull or reset to get the latest code.
 
