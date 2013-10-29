@@ -14,6 +14,7 @@ cake.coffee.folders = [ # all .coffee files in each folder will be compiled to .
 # 'server'
 # ...
   'node-deploy'
+  'node-proxy'
 ]
 
 cake.template = batch: {} # Build JSON id:html Array from files in path
